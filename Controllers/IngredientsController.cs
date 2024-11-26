@@ -17,12 +17,12 @@ namespace MiRecetaSecretaAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            return Ok(await _db.Ingredients.ToListAsync());
+            return Ok(await _db.Ingredient.ToListAsync());
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIngredient(int id)
         {
-            var product = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == id);
+            var product = await _db.Ingredient.FirstOrDefaultAsync(x => x.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -37,7 +37,7 @@ namespace MiRecetaSecretaAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            _db.Ingredients.Add(ingredient);
+            _db.Ingredient.Add(ingredient);
             await _db.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetIngredient), new { id = ingredient.Id }, ingredient);
@@ -46,7 +46,7 @@ namespace MiRecetaSecretaAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var ingredient = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == id);
+            var ingredient = await _db.Ingredient.FirstOrDefaultAsync(x => x.Id == id);
             if (ingredient == null)
             {
                 return NotFound();
