@@ -28,11 +28,11 @@ namespace MiRecetaSecretaAPI.Models
 
         [Required]
         public string ? Rol { get; set; }
-        public int Status { get; set; }
+        public int ? Status { get; set; }
 
         public int CreatedBy { get; set; }
 
-        public ICollection<Ingredient> Ingredients { get; set; }
-        public ICollection<Recipe> Recipes { get; set; }
+        public ICollection<Ingredient>? Ingredients { get; set; }
+        public ICollection<Recipe>? Recipes { get; set; }
     }
 }

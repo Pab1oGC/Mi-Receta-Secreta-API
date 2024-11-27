@@ -21,22 +21,23 @@ namespace MiRecetaSecretaAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
-            var user = await _db.User
-                .FirstOrDefaultAsync(u => u.Email == loginRequest.Email && u.Password == loginRequest.Password);
+
+            var user = await _db.User.FirstOrDefaultAsync(u => u.Email == loginRequest.Email);
 
             if (user == null)
                 return Unauthorized(new { message = "Invalid email or password" });
 
-            // Generate JWT Token
+            if (!BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password))
+                return Unauthorized(new { message = "Invalid email or password" });
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim(ClaimTypes.Role, user.Rol),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(ClaimTypes.Role, user.Rol),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
