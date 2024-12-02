@@ -67,7 +67,7 @@ namespace MiRecetaSecretaAPI.Controllers
         {
             if (id != user.Id)
             {
-                return BadRequest();
+                return BadRequest(new { message = "User ID mismatch" });
             }
 
             var existingUser = await _db.User.FindAsync(id);
@@ -78,8 +78,10 @@ namespace MiRecetaSecretaAPI.Controllers
 
             existingUser.Names = user.Names;
             existingUser.Lastname = user.Lastname;
+            existingUser.SecondLastname = user.SecondLastname;
             existingUser.Email = user.Email;
             existingUser.Rol = user.Rol;
+
 
             try
             {

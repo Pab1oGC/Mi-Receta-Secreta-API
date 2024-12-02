@@ -41,8 +41,7 @@ namespace MiRecetaSecretaAPI.Models
         [Range(0, 1, ErrorMessage = "Status must be 0 (inactive) or 1 (active).")]
         public int? Status { get; set; } = 1; 
 
-        [Required(ErrorMessage = "CreatedBy is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "CreatedBy must be a valid user ID.")]
+       
         public int CreatedBy { get; set; }
 
         public ICollection<Ingredient>? Ingredients { get; set; }
