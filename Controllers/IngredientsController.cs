@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiRecetaSecretaAPI.Data;
 using MiRecetaSecretaAPI.Models;
@@ -7,6 +8,7 @@ namespace MiRecetaSecretaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("SecretRecipeFront")]
     public class IngredientsController : Controller
     {
         private readonly AppDBContext _db;
