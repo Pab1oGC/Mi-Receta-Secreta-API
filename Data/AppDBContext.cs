@@ -15,16 +15,7 @@ namespace MiRecetaSecretaAPI.Data
         public DbSet<RecipeTag> RecipeTag { get; set; }
         public DbSet<RecipeIngredient> RecipeIngredient { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<RecipeIngredient>()
-                .HasKey(i => new { i.RecipeId, i.IngredientId });
-
-            modelBuilder.Entity<RecipeTag>()
-                .HasKey(t => new { t.RecipeId, t.TagId });
-        }
 
     }
 }

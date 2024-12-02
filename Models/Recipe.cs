@@ -24,9 +24,9 @@ namespace MiRecetaSecretaAPI.Models
         public int Status { get; set; }
 
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User ?User { get; set; }
 
-        public ICollection<RecipeIngredient> RecipeIngredients { get; set; }
-        public ICollection<RecipeTag> RecipeTags { get; set; }
+        public ICollection<RecipeIngredient> ?RecipeIngredients { get; set; }
+        public ICollection<RecipeTag> ?RecipeTags { get; set; }
     }
 }

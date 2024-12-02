@@ -4,6 +4,7 @@ using MiRecetaSecretaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MiRecetaSecretaAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20241202042012_ChangeRecipe")]
+    partial class ChangeRecipe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,48 +101,32 @@ namespace MiRecetaSecretaAPI.Migrations
 
             modelBuilder.Entity("MiRecetaSecretaAPI.Models.RecipeIngredient", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("RecipeId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Amount")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IngredientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
+                    b.HasKey("RecipeId", "IngredientId");
 
                     b.HasIndex("IngredientId");
-
-                    b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeIngredient");
                 });
 
             modelBuilder.Entity("MiRecetaSecretaAPI.Models.RecipeTag", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("RecipeId")
                         .HasColumnType("int");
 
                     b.Property<int>("TagId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipeId");
+                    b.HasKey("RecipeId", "TagId");
 
                     b.HasIndex("TagId");
 
