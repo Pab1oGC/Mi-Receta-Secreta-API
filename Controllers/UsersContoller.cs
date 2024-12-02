@@ -19,12 +19,28 @@ namespace MiRecetaSecretaAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if(!ModelState.IsValid)
+    {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
 
-            // Hash the password before saving
+                return BadRequest(new { message = "Validation failed", errors });
+            }
+
+            if (user.Rol?.ToLower() != "client")
+            {
+                return Conflict(new { message = "Invalid role. Only 'client' is allowed." });
+            }
+            var existingUser = await _db.User.FirstOrDefaultAsync(u => u.Email == user.Email);
+            if (existingUser != null)
+            {
+                return Conflict(new { message = "The email is already in use." });
+            }
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            user.Status = 1; 
+            user.Status = 1;
+            user.CreatedBy = 1;
             _db.User.Add(user);
             await _db.SaveChangesAsync();
 
@@ -50,19 +66,20 @@ namespace MiRecetaSecretaAPI.Controllers
         public async Task<IActionResult> PutUser(int id, [FromBody] User user)
         {
             if (id != user.Id)
-                return BadRequest(new { message = "User ID mismatch" });
+            {
+                return BadRequest();
+            }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var existingUser = await _db.User.FirstOrDefaultAsync(u => u.Id == id);
+            var existingUser = await _db.User.FindAsync(id);
             if (existingUser == null)
-                return NotFound(new { message = "User not found" });
+            {
+                return NotFound();
+            }
 
+            existingUser.Names = user.Names;
+            existingUser.Lastname = user.Lastname;
             existingUser.Email = user.Email;
             existingUser.Rol = user.Rol;
-            if (!string.IsNullOrEmpty(user.Password))
-                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
             try
             {
@@ -70,10 +87,10 @@ namespace MiRecetaSecretaAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                return StatusCode(500, new { message = "An error occurred while updating the user" });
+                return StatusCode(500, "Error updating user.");
             }
 
-            return Ok(new { message = "User updated successfully" });
+            return Ok(existingUser);
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
