@@ -4,8 +4,10 @@ namespace MiRecetaSecretaAPI.Models
 {
     public class RecipeIngredient
     {
+        [Key]
+        public int Id { get; set; }
         [Required]
-        public int Amount { get; set; }
+        public string ? Amount { get; set; }
 
         public int RecipeId { get; set; }
         public int IngredientId { get; set; }
