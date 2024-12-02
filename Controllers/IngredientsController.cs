@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiRecetaSecretaAPI.Data;
 using MiRecetaSecretaAPI.Models;
@@ -7,6 +8,7 @@ namespace MiRecetaSecretaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("SecretRecipeFront")]
     public class IngredientsController : Controller
     {
         private readonly AppDBContext _db;
@@ -17,12 +19,12 @@ namespace MiRecetaSecretaAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
         {
-            return Ok(await _db.Ingredient.ToListAsync());
+            return Ok(await _db.Ingredient.Where(x => x.Status == 1).ToListAsync());
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIngredient(int id)
         {
-            var product = await _db.Ingredient.FirstOrDefaultAsync(x => x.Id == id);
+            var product = await _db.Ingredient.FirstOrDefaultAsync(x => x.Id == id && x.Status == 1);
             if (product == null)
             {
                 return NotFound();
@@ -46,13 +48,25 @@ namespace MiRecetaSecretaAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var ingredient = await _db.Ingredient.FirstOrDefaultAsync(x => x.Id == id);
-            if (ingredient == null)
+            var ingredientAllData = await _db.Ingredient
+                                .Include(ri => ri.RecipeIngredients)
+                                    .ThenInclude(r => r.Recipe)
+                                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (ingredientAllData == null)
             {
                 return NotFound();
             }
 
-            ingredient.Status = 0;
+            ingredientAllData.Status = 0;
+            _db.Entry(ingredientAllData).Property(x => x.Status).IsModified = true;
+
+            foreach (var recipe in ingredientAllData.RecipeIngredients)
+            {
+                recipe.Recipe.Status = 0;
+                _db.Entry(recipe.Recipe).Property(x => x.Status).IsModified= true;
+            }
+            
             try
             {
                 await _db.SaveChangesAsync();
@@ -75,7 +89,7 @@ namespace MiRecetaSecretaAPI.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _db.Entry(ingredient).State = EntityState.Modified;
+            _db.Ingredient.Update(ingredient);
 
             try
             {
