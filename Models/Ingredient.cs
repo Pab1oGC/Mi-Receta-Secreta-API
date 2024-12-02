@@ -19,11 +19,11 @@ namespace MiRecetaSecretaAPI.Models
         [StringLength(100,MinimumLength = 2)]
         public string ? Type { get; set; }
 
-        public int Status { get; set; } 
+        public int ? Status { get; set; } 
 
         [Required]
         public int UserId { get; set; }
-        public User User { get; set; }
-        public ICollection<RecipeIngredient> RecipeIngredients { get; set; }
+        public User ? User { get; set; }
+        public ICollection<RecipeIngredient> ? RecipeIngredients { get; set; }
     }
 }
